@@ -72,8 +72,20 @@ echo "== 설치"
 adb install "$apk"
 
 echo "== 키보드 목록에 있고, 켜서 고를 수 있는지"
-imes="$(adb shell ime list -a -s | tr -d '\r')"
-grep -qxF "$ime" <<< "$imes" || fail "키보드 목록에 $ime 이(가) 없다"
+# 설치 직후에는 시스템이 키보드 목록을 아직 다시 읽지 않았을 수 있어서 잠깐 기다린다.
+listed=false
+for _ in $(seq 20); do
+  imes="$(adb shell ime list -a -s | tr -d '\r' | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')"
+  if grep -qxF "$ime" <<< "$imes"; then
+    listed=true
+    break
+  fi
+  sleep 1
+done
+if [ "$listed" != true ]; then
+  printf '키보드 목록:\n%s\n' "$imes"
+  fail "키보드 목록에 $ime 이(가) 없다"
+fi
 adb shell ime enable "$ime"
 adb shell ime set "$ime"
 current="$(adb shell settings get secure default_input_method | tr -d '\r')"
