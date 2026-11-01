@@ -7,4 +7,6 @@
     <string name="open_keyboard_list">키보드 목록 열기</string>
     <string name="settings_hint">키보드 목록에서 한글 키보드를 켠 다음, 키보드 고르기로 바꿔 쓰세요.</string>
     <string name="build_info">빌드 %1$d (%2$s)</string>
+    <string name="try_field_label">시험 칸 (친 내용은 저장하지 않습니다)</string>
+    <string name="try_field_hint">여기를 눌러 키보드를 쳐 보세요</string>
 </resources>
