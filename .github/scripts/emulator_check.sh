@@ -64,6 +64,16 @@ sys.exit(1)
 PY
 }
 
+# dumpsys input_method 결과 중 우리 키보드 서비스가 스스로 남긴 부분만 보고, 자판이 시작됐고 창이 보이는지 확인한다.
+our_keyboard_visible() {
+  awk -v pkg="$package." '
+    /^Input method service state for / { mine = index($0, pkg) > 0 }
+    mine && /mInputViewStarted=true/ { started = 1 }
+    mine && /mDecorViewVisible=true/ { visible = 1 }
+    END { exit (started && visible) ? 0 : 1 }
+  ' "$1"
+}
+
 screenshot() {
   adb exec-out screencap -p > "$out/$1.png"
 }
@@ -102,16 +112,18 @@ echo "== 시험 칸을 누르면 키보드가 뜨는지"
 center="$(edit_text_center "$out/settings.xml")" || fail "설정 화면에 시험 칸이 없다"
 read -r x y <<< "$center"
 adb shell input tap "$x" "$y"
+# 시스템이 키보드를 띄우라고 한 상태(mInputShown)만으로는 부족하다. 그 직후에는 우리 서비스가 아직
+# 자판을 만들지 않았을 수 있어서, 서비스 쪽 상태가 바뀔 때까지 기다린다.
 shown=false
 for _ in $(seq 10); do
   adb shell dumpsys input_method > "$out/input_method.txt"
-  # 앞의 것은 시스템 쪽 기록, 뒤의 것은 키보드 서비스 쪽 기록이다. 안드로이드 버전에 따라 한쪽만 나올 수 있다.
-  if grep -qE 'mInputShown=true|mDecorViewVisible=true' "$out/input_method.txt"; then
+  if our_keyboard_visible "$out/input_method.txt"; then
     shown=true
     break
   fi
   sleep 1
 done
+sleep 1 # 창이 보이게 된 뒤 첫 화면이 그려질 때까지 잠깐 기다린다.
 screenshot 2-keyboard
 [ "$shown" = true ] || fail "시험 칸을 눌러도 키보드가 뜨지 않았다"
 
