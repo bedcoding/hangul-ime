@@ -78,6 +78,10 @@ screenshot() {
   adb exec-out screencap -p > "$out/$1.png"
 }
 
+# 가상 폰은 하드웨어 키보드가 붙은 것으로 잡혀 있어서, 그대로 두면 안드로이드가 화면 키보드를 띄우지 않는다.
+# 하드웨어 키보드가 없는 실제 폰처럼 화면 키보드가 뜨도록 '하드웨어 키보드가 있어도 화면 키보드 표시'를 켠다.
+adb shell settings put secure show_ime_with_hard_keyboard 1
+
 echo "== 설치"
 adb install "$apk"
 
