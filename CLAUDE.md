@@ -20,10 +20,12 @@
   - `android/`: 안드로이드 앱. IME 서비스, 키보드 View, 편집 모드, 내 문구 패널, 설정 화면.
   - `testcases/`: 「테스트」 목록을 데이터 파일로 보관한다. 안드로이드 테스트와 나중의 iOS 테스트가 같은 파일을 읽는다.
   - `ios/`: 나중에 추가한다 (지금은 만들지 않음).
-- minSdk는 사용자 폰의 안드로이드 버전을 확인한 뒤 정한다. targetSdk는 최신 안정 버전.
+- minSdk는 사용자 폰의 안드로이드 버전을 확인한 뒤 정한다 (그 전까지 임시로 26). targetSdk와 compileSdk는 최신 안정 버전이다 (지금 37).
+- applicationId는 `io.github.bedcoding.hangulime`이다. 바꾸면 다른 앱이 되어 깔려 있는 키보드를 업데이트할 수 없으니 바꾸지 않는다. 개발판은 뒤에 `.dev`가 붙는다.
+- Android Gradle plugin 9부터 Kotlin 지원이 내장되어 있다. 앱 모듈에 `org.jetbrains.kotlin.android` 플러그인을 넣으면 빌드가 실패하니 넣지 않는다.
 
 ## 보안
-- 매니페스트에 INTERNET이 없어야 하고, 위험 권한은 RECORD_AUDIO만 둔다. 라이브러리 매니페스트가 합쳐지며 다른 권한이 들어올 수 있으니, CI가 빌드된 APK의 권한 목록을 검사해서 INTERNET이 있거나 RECORD_AUDIO 말고 다른 위험 권한이 있으면 실패시킨다.
+- 매니페스트에 INTERNET이 없어야 하고, 위험 권한은 RECORD_AUDIO만 둔다. 라이브러리 매니페스트가 합쳐지며 다른 권한이 들어올 수 있으니, CI가 빌드된 APK의 권한을 허용 목록(`android/permissions-allowed.txt`)과 비교해서 목록에 없는 권한이 하나라도 있으면 실패시킨다. 허용 목록에는 RECORD_AUDIO만 두고, INTERNET은 절대 넣지 않는다.
 - `android:allowBackup="false"`로 하고, `dataExtractionRules`에서도 클라우드 백업과 기기 이전을 모두 막는다. 자동 백업은 기본으로 켜져 있어서, 그대로 두면 앱 데이터가 구글 백업이나 기기 이전으로 나갈 수 있다.
 - 내 문구와 클립보드 기록은 Android Keystore의 AES-GCM 키(밖으로 꺼낼 수 없음)로 암호화해 앱 내부 저장소에 둔다.
 - 클립보드 기록에는 민감 표시가 붙은 항목(`ClipDescription.EXTRA_IS_SENSITIVE`, Android 13부터)을 저장하지 않는다.

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">한글 키보드</string>
+    <string name="subtype_ko">한국어</string>
+    <string name="ime_placeholder">자판은 아직 만드는 중입니다.</string>
+    <string name="choose_keyboard">키보드 고르기</string>
+    <string name="open_keyboard_list">키보드 목록 열기</string>
+    <string name="settings_hint">키보드 목록에서 한글 키보드를 켠 다음, 키보드 고르기로 바꿔 쓰세요.</string>
+    <string name="build_info">빌드 %1$d (%2$s)</string>
+</resources>
